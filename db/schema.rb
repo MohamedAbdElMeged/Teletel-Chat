@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_10_11_041615) do
+ActiveRecord::Schema[7.0].define(version: 2023_10_30_182246) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_stat_statements"
   enable_extension "pg_trgm"
@@ -37,8 +37,10 @@ ActiveRecord::Schema[7.0].define(version: 2023_10_11_041615) do
     t.datetime "active_at", precision: nil
     t.integer "availability", default: 0, null: false
     t.boolean "auto_offline", default: true, null: false
+    t.bigint "custom_role_id"
     t.index ["account_id", "user_id"], name: "uniq_user_id_per_account_id", unique: true
     t.index ["account_id"], name: "index_account_users_on_account_id"
+    t.index ["custom_role_id"], name: "index_account_users_on_custom_role_id"
     t.index ["user_id"], name: "index_account_users_on_user_id"
   end
 
@@ -515,6 +517,22 @@ ActiveRecord::Schema[7.0].define(version: 2023_10_11_041615) do
     t.index ["user_id"], name: "index_custom_filters_on_user_id"
   end
 
+  create_table "custom_role_permissions", force: :cascade do |t|
+    t.bigint "custom_role_id", null: false
+    t.bigint "permission_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["custom_role_id"], name: "index_custom_role_permissions_on_custom_role_id"
+    t.index ["permission_id"], name: "index_custom_role_permissions_on_permission_id"
+  end
+
+  create_table "custom_roles", force: :cascade do |t|
+    t.string "name", null: false
+    t.text "description", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
   create_table "dashboard_apps", force: :cascade do |t|
     t.string "title", null: false
     t.jsonb "content", default: []
@@ -734,6 +752,13 @@ ActiveRecord::Schema[7.0].define(version: 2023_10_11_041615) do
     t.index ["user_id"], name: "index_notifications_on_user_id"
   end
 
+  create_table "permissions", force: :cascade do |t|
+    t.string "action"
+    t.string "model"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
   create_table "platform_app_permissibles", force: :cascade do |t|
     t.bigint "platform_app_id", null: false
     t.string "permissible_type", null: false
@@ -944,6 +969,8 @@ ActiveRecord::Schema[7.0].define(version: 2023_10_11_041615) do
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
+  add_foreign_key "custom_role_permissions", "custom_roles"
+  add_foreign_key "custom_role_permissions", "permissions"
   add_foreign_key "inboxes", "portals"
   create_trigger("accounts_after_insert_row_tr", :generated => true, :compatibility => 1).
       on("accounts").

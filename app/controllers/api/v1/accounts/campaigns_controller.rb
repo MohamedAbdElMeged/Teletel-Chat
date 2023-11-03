@@ -1,7 +1,6 @@
 class Api::V1::Accounts::CampaignsController < Api::V1::Accounts::BaseController
   before_action :campaign, except: [:index, :create]
   before_action :check_authorization
-
   def index
     @campaigns = Current.account.campaigns
   end

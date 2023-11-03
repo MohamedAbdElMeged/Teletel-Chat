@@ -53,7 +53,8 @@ class Api::V1::Accounts::AgentsController < Api::V1::Accounts::BaseController
     }.merge({
       role: new_agent_params[:role],
       availability: new_agent_params[:availability],
-      auto_offline: new_agent_params[:auto_offline]
+      auto_offline: new_agent_params[:auto_offline],
+      custom_role_id: new_agent_params[:custom_role_id]
     }.compact))
   end
 
@@ -64,7 +65,7 @@ class Api::V1::Accounts::AgentsController < Api::V1::Accounts::BaseController
   def new_agent_params
     # intial string ensures the password requirements are met
     temp_password = "1!aA#{SecureRandom.alphanumeric(12)}"
-    params.require(:agent).permit(:email, :name, :role, :availability, :auto_offline)
+    params.require(:agent).permit(:email, :name, :role, :availability, :auto_offline, :custom_role_id)
           .merge!(password: temp_password, password_confirmation: temp_password, inviter: current_user)
   end
 

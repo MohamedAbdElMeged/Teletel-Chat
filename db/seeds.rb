@@ -7,7 +7,11 @@ if Rails.env.production?
   # Setup Onboarding flow
   Redis::Alfred.set(Redis::Alfred::CHATWOOT_INSTALLATION_ONBOARDING, true)
 end
-
+administrator_role = CustomRole.find_by(name: 'administrator')
+administrator_role ||= CustomRole.create({
+                                           name: 'administrator',
+                                           description: 'administrator description'
+                                         })
 ## Seeds for Local Development
 unless Rails.env.production?
 
@@ -32,13 +36,15 @@ unless Rails.env.production?
   AccountUser.create!(
     account_id: account.id,
     user_id: user.id,
-    role: :administrator
+    role: :administrator,
+    custom_role_id: administrator_role.id
   )
 
   AccountUser.create!(
     account_id: secondary_account.id,
     user_id: user.id,
-    role: :administrator
+    role: :administrator,
+    custom_role_id: administrator_role.id
   )
 
   web_widget = Channel::WebWidget.create!(account: account, website_url: 'https://acme.inc')
