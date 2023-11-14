@@ -17,6 +17,14 @@ class Api::BaseController < ApplicationController
     authorize(model)
   end
 
+  def custom_check_authorization
+    action_name = request[:action]
+    action_name = 'show' if action_name == 'index'
+    current_user = Current.account_user
+    raise Pundit::NotAuthorizedError unless current_user.custom_role.permissions.exists?(controller: controller_name,
+                                                                                         action: action_name) || Current.account_user.administrator?
+  end
+
   def check_admin_authorization?
     raise Pundit::NotAuthorizedError unless Current.account_user.administrator?
   end

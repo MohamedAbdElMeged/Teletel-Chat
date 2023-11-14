@@ -6,6 +6,20 @@ RSpec.describe 'Agents API', type: :request do
   let(:account) { create(:account) }
   let(:admin) { create(:user, custom_attributes: { test: 'test' }, account: account, role: :administrator) }
   let(:agent) { create(:user, account: account, role: :agent) }
+  let(:agent_create_permission) { create(:permission, action: 'create', controller: 'agents') }
+  let(:agent_update_permission) { create(:permission, action: 'update', controller: 'agents') }
+  let(:agent_destroy_permission) { create(:permission, action: 'destroy', controller: 'agents') }
+  let(:agent_show_permission) { create(:permission, action: 'show', controller: 'agents') }
+
+  before do
+    ADMINISTRATOR_CUSTOM_ROLE.permissions << agent_create_permission
+    ADMINISTRATOR_CUSTOM_ROLE.permissions << agent_update_permission
+    ADMINISTRATOR_CUSTOM_ROLE.permissions << agent_destroy_permission
+    ADMINISTRATOR_CUSTOM_ROLE.permissions << agent_show_permission
+    ADMINISTRATOR_CUSTOM_ROLE.save
+    AGENT_CUSTOM_ROLE.permissions << agent_show_permission
+    AGENT_CUSTOM_ROLE.save
+  end
 
   describe 'GET /api/v1/accounts/{account.id}/agents' do
     context 'when it is an unauthenticated user' do
@@ -23,7 +37,6 @@ RSpec.describe 'Agents API', type: :request do
         get "/api/v1/accounts/#{account.id}/agents",
             headers: agent.create_new_auth_token,
             as: :json
-
         expect(response).to have_http_status(:success)
         expect(response.parsed_body.size).to eq(account.users.count)
       end
@@ -152,7 +165,7 @@ RSpec.describe 'Agents API', type: :request do
     end
 
     context 'when it is an authenticated user' do
-      params = { name: 'NewUser', email: Faker::Internet.email, role: :agent }
+      let!(:params) { { name: 'NewUser', email: Faker::Internet.email, role: :agent, custom_role_id: AGENT_CUSTOM_ROLE.id } }
 
       it 'returns unauthorized for agents' do
         post "/api/v1/accounts/#{account.id}/agents",
@@ -168,7 +181,6 @@ RSpec.describe 'Agents API', type: :request do
              params: params,
              headers: admin.create_new_auth_token,
              as: :json
-
         expect(response).to have_http_status(:success)
         expect(account.users.last.name).to eq('NewUser')
       end

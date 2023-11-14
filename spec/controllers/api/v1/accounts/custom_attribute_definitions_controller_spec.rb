@@ -3,6 +3,18 @@ require 'rails_helper'
 RSpec.describe 'Custom Attribute Definitions API', type: :request do
   let(:account) { create(:account) }
   let(:user) { create(:user, account: account) }
+  let(:custom_attribute_definition_create_permission) { create(:permission, action: 'create', controller: 'custom_attribute_definitions') }
+  let(:custom_attribute_definition_update_permission) { create(:permission, action: 'update', controller: 'custom_attribute_definitions') }
+  let(:custom_attribute_definition_destroy_permission) { create(:permission, action: 'destroy', controller: 'custom_attribute_definitions') }
+  let(:custom_attribute_definition_show_permission) { create(:permission, action: 'show', controller: 'custom_attribute_definitions') }
+
+  before do
+    AGENT_CUSTOM_ROLE.permissions << custom_attribute_definition_create_permission
+    AGENT_CUSTOM_ROLE.permissions << custom_attribute_definition_update_permission
+    AGENT_CUSTOM_ROLE.permissions << custom_attribute_definition_show_permission
+    AGENT_CUSTOM_ROLE.permissions << custom_attribute_definition_destroy_permission
+    AGENT_CUSTOM_ROLE.save
+  end
 
   describe 'GET /api/v1/accounts/{account.id}/custom_attribute_definitions' do
     context 'when it is an unauthenticated user' do

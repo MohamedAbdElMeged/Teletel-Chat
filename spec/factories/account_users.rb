@@ -5,5 +5,6 @@ FactoryBot.define do
     account
     user
     role { 'agent' }
+    custom_role
   end
 end

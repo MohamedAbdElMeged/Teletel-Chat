@@ -16,7 +16,7 @@ class CustomRole < ApplicationRecord
 
   def current_permissions_stringified
     permissions.map do |p|
-      "#{p.action}_#{p.model.downcase.pluralize}"
+      "#{p.action}_#{p.controller}"
     end
   end
 end

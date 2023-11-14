@@ -10,8 +10,10 @@ json.custom_attributes resource.custom_attributes if resource.custom_attributes.
 json.name resource.name
 json.role resource.role
 json.thumbnail resource.avatar_url
-json.custom_role do
-  json.id resource.id
-  json.name resource.account_users.find_by(account_id: Current.account&.id).custom_role.name
-  json.permissions resource.account_users.find_by(account_id: Current.account&.id).custom_role.current_permissions_stringified
+if resource.account_users.size.positive?
+  json.custom_role do
+    json.id resource.account_users.find_by(account_id: Current.account&.id).custom_role.id
+    json.name resource.account_users.find_by(account_id: Current.account&.id).custom_role.name
+    json.permissions resource.account_users.find_by(account_id: Current.account&.id).custom_role.current_permissions_stringified
+  end
 end

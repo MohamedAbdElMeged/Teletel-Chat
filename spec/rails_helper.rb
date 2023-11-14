@@ -10,7 +10,7 @@ require 'sidekiq/testing'
 # test-prof helpers for tests optimization
 require 'test_prof/recipes/rspec/before_all'
 require 'test_prof/recipes/rspec/let_it_be'
-
+require 'database_cleaner'
 # Add additional requires below this line. Rails is not loaded until this point!
 
 # Requires supporting ruby files with custom matchers and macros, etc, in
@@ -39,6 +39,21 @@ rescue ActiveRecord::PendingMigrationError => e
   exit 1
 end
 RSpec.configure do |config|
+  config.before(:suite) do
+    DatabaseCleaner.clean_with(:truncation)
+  end
+  admin_role = CustomRole.find_by(name: 'administrator')
+
+  ADMINISTRATOR_CUSTOM_ROLE = admin_role || CustomRole.create({
+                                                                name: 'administrator',
+                                                                description: 'system administrator'
+                                                              })
+  agent_role = CustomRole.find_by(name: 'agent')
+  AGENT_CUSTOM_ROLE = agent_role || CustomRole.create({
+                                                        name: 'agent',
+                                                        description: 'system agent'
+                                                      })
+
   config.include FactoryBot::Syntax::Methods
   # Remove this line if you're not using ActiveRecord or ActiveRecord fixtures
   config.fixture_path = Rails.root.join('spec/fixtures')

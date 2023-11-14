@@ -1,4 +1,4 @@
-class Api::V1::Accounts::CustomRolesController < ApplicationController
+class Api::V1::Accounts::CustomRolesController < Api::V1::Accounts::BaseController
   before_action :custom_role, only: [:update, :show, :destroy]
   before_action :check_authorization
   def index
@@ -42,6 +42,10 @@ class Api::V1::Accounts::CustomRolesController < ApplicationController
   end
 
   private
+
+  def check_authorization
+    raise Pundit::NotAuthorizedError unless Current.account_user.administrator?
+  end
 
   def custom_role
     @custom_role ||= CustomRole.find_by(id: params[:id])

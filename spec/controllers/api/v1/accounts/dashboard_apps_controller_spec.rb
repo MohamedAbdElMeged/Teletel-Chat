@@ -2,6 +2,14 @@ require 'rails_helper'
 
 RSpec.describe 'DashboardAppsController', type: :request do
   let(:account) { create(:account) }
+  let(:dashboard_apps_show_permission) { create(:permission, action: 'show', controller: 'dashboard_apps') }
+
+  before do
+    ADMINISTRATOR_CUSTOM_ROLE.permissions << dashboard_apps_show_permission
+    ADMINISTRATOR_CUSTOM_ROLE.save
+    AGENT_CUSTOM_ROLE.permissions << dashboard_apps_show_permission
+    AGENT_CUSTOM_ROLE.save
+  end
 
   describe 'GET /api/v1/accounts/{account.id}/dashboard_apps' do
     context 'when it is an unauthenticated user' do

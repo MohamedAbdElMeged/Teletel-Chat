@@ -1,6 +1,6 @@
 class Api::V1::Accounts::CannedResponsesController < Api::V1::Accounts::BaseController
   before_action :fetch_canned_response, only: [:update, :destroy]
-  before_action :check_authorization
+  before_action :custom_check_authorization
   def index
     render json: canned_responses
   end

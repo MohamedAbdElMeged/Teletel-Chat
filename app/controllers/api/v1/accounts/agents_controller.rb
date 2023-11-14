@@ -1,10 +1,10 @@
 class Api::V1::Accounts::AgentsController < Api::V1::Accounts::BaseController
   before_action :fetch_agent, except: [:create, :index]
-  before_action :check_authorization
   before_action :find_user, only: [:create]
   before_action :validate_limit, only: [:create]
   before_action :create_user, only: [:create]
   before_action :save_account_user, only: [:create]
+  before_action :custom_check_authorization
 
   def index
     @agents = agents
@@ -24,10 +24,6 @@ class Api::V1::Accounts::AgentsController < Api::V1::Accounts::BaseController
   end
 
   private
-
-  def check_authorization
-    super(User)
-  end
 
   def fetch_agent
     @agent = agents.find(params[:id])

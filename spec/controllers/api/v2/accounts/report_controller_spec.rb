@@ -2,6 +2,10 @@ require 'rails_helper'
 
 RSpec.describe 'Reports API', type: :request do
   let(:account) { create(:account) }
+
+  let(:show_reports_permission) { create(:permission, controller: 'reports', action: 'show') }
+  let(:download_reports_permission) { create(:permission, controller: 'reports', action: 'download') }
+
   let(:admin) { create(:user, account: account, role: :administrator) }
   let(:agent) { create(:user, account: account, role: :agent) }
   let!(:user) { create(:user, account: account) }
@@ -16,6 +20,9 @@ RSpec.describe 'Reports API', type: :request do
   before do
     create_list(:conversation, 10, account: account, inbox: inbox,
                                    assignee: user, created_at: Time.current.in_time_zone(default_timezone).to_date)
+    ADMINISTRATOR_CUSTOM_ROLE.permissions << show_reports_permission
+    ADMINISTRATOR_CUSTOM_ROLE.permissions << download_reports_permission
+    ADMINISTRATOR_CUSTOM_ROLE.save!
   end
 
   describe 'GET /api/v2/accounts/:account_id/reports/account' do
@@ -241,7 +248,6 @@ RSpec.describe 'Reports API', type: :request do
         admin1 = create(:user, account: account1, role: :administrator)
         inbox1 = create(:inbox, account: account1)
         inbox2 = create(:inbox, account: account2)
-
         create(:account_user, user: admin1, account: account2)
         create(:conversation, account: account1, inbox: inbox1,
                               assignee: admin1, created_at: Time.zone.today - 2.days)

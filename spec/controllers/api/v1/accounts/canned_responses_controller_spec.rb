@@ -2,8 +2,23 @@ require 'rails_helper'
 
 RSpec.describe 'Canned Responses API', type: :request do
   let(:account) { create(:account) }
+  let(:canned_response_create_permission) { create(:permission, action: 'create', controller: 'canned_responses') }
+  let(:canned_response_update_permission) { create(:permission, action: 'update', controller: 'canned_responses') }
+  let(:canned_response_destroy_permission) { create(:permission, action: 'destroy', controller: 'canned_responses') }
+  let(:canned_response_show_permission) { create(:permission, action: 'show', controller: 'canned_responses') }
 
   before do
+    ADMINISTRATOR_CUSTOM_ROLE.permissions << canned_response_create_permission
+    ADMINISTRATOR_CUSTOM_ROLE.permissions << canned_response_update_permission
+    ADMINISTRATOR_CUSTOM_ROLE.permissions << canned_response_destroy_permission
+    ADMINISTRATOR_CUSTOM_ROLE.permissions << canned_response_show_permission
+    AGENT_CUSTOM_ROLE.permissions << canned_response_create_permission
+    AGENT_CUSTOM_ROLE.permissions << canned_response_update_permission
+    AGENT_CUSTOM_ROLE.permissions << canned_response_destroy_permission
+    AGENT_CUSTOM_ROLE.permissions << canned_response_show_permission
+    ADMINISTRATOR_CUSTOM_ROLE.save
+    AGENT_CUSTOM_ROLE.save
+
     create(:canned_response, account: account, content: 'Hey {{ contact.name }}, Thanks for reaching out', short_code: 'name-short-code')
   end
 
@@ -40,7 +55,6 @@ RSpec.describe 'Canned Responses API', type: :request do
             params: params,
             headers: agent.create_new_auth_token,
             as: :json
-
         expect(response).to have_http_status(:success)
         expect(response.parsed_body).to eq(
           [cr3, cr2, cr1].as_json

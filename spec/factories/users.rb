@@ -20,8 +20,13 @@ FactoryBot.define do
     after(:build) do |user, evaluator|
       user.skip_confirmation! if evaluator.skip_confirmation
       if evaluator.account
+        custom_role = if evaluator.role.to_s == 'agent'
+                        AGENT_CUSTOM_ROLE
+                      elsif evaluator.role.to_s == 'administrator'
+                        ADMINISTRATOR_CUSTOM_ROLE
+                      end
         create(:account_user, user: user, account: evaluator.account, role: evaluator.role, inviter: evaluator.inviter,
-                              auto_offline: evaluator.auto_offline)
+                              auto_offline: evaluator.auto_offline, custom_role: custom_role)
       end
     end
 

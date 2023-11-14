@@ -1,6 +1,6 @@
 class CannedResponsePolicy < ApplicationPolicy
   def index?
-    @account_user.custom_role.permissions.exists?(model: @record.name, action: 'show')
+    true
   end
 
   def update?

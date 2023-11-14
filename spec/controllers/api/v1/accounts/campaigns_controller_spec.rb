@@ -2,6 +2,18 @@ require 'rails_helper'
 
 RSpec.describe 'Campaigns API', type: :request do
   let(:account) { create(:account) }
+  let(:campaign_create_permission) { create(:permission, action: 'create', controller: 'campaigns') }
+  let(:campaign_update_permission) { create(:permission, action: 'update', controller: 'campaigns') }
+  let(:campaign_destroy_permission) { create(:permission, action: 'destroy', controller: 'campaigns') }
+  let(:campaign_show_permission) { create(:permission, action: 'show', controller: 'campaigns') }
+
+  before do
+    ADMINISTRATOR_CUSTOM_ROLE.permissions << campaign_create_permission
+    ADMINISTRATOR_CUSTOM_ROLE.permissions << campaign_update_permission
+    ADMINISTRATOR_CUSTOM_ROLE.permissions << campaign_destroy_permission
+    ADMINISTRATOR_CUSTOM_ROLE.permissions << campaign_show_permission
+    ADMINISTRATOR_CUSTOM_ROLE.save
+  end
 
   describe 'GET /api/v1/accounts/{account.id}/campaigns' do
     context 'when it is an unauthenticated user' do

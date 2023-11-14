@@ -2,6 +2,7 @@ class Api::V1::Accounts::CustomAttributeDefinitionsController < Api::V1::Account
   before_action :fetch_custom_attributes_definitions, except: [:create]
   before_action :fetch_custom_attribute_definition, only: [:show, :update, :destroy]
   DEFAULT_ATTRIBUTE_MODEL = 'conversation_attribute'.freeze
+  before_action :custom_check_authorization
 
   def index; end
 

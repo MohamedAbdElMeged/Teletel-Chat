@@ -1,7 +1,7 @@
 class Api::V1::Accounts::DashboardAppsController < Api::V1::Accounts::BaseController
   before_action :fetch_dashboard_apps, except: [:create]
   before_action :fetch_dashboard_app, only: [:show, :update, :destroy]
-
+  before_action :custom_check_authorization, only: [:index, :show]
   def index; end
 
   def show; end

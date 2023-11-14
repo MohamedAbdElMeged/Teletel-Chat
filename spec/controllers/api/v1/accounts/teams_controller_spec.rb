@@ -3,6 +3,7 @@ require 'rails_helper'
 RSpec.describe 'Teams API', type: :request do
   let(:account) { create(:account) }
   let!(:team) { create(:team, account: account) }
+  let(:team_show_permission) { create(:permission, action: 'show', controller: 'teams') }
 
   describe 'GET /api/v1/accounts/{account.id}/teams' do
     context 'when it is an unauthenticated user' do
@@ -15,6 +16,11 @@ RSpec.describe 'Teams API', type: :request do
 
     context 'when it is an authenticated user' do
       let(:agent) { create(:user, account: account, role: :agent) }
+
+      before do
+        AGENT_CUSTOM_ROLE.permissions << team_show_permission
+        AGENT_CUSTOM_ROLE.save
+      end
 
       it 'returns all the teams' do
         get "/api/v1/accounts/#{account.id}/teams",
@@ -38,6 +44,11 @@ RSpec.describe 'Teams API', type: :request do
 
     context 'when it is an authenticated user' do
       let(:agent) { create(:user, account: account, role: :agent) }
+
+      before do
+        AGENT_CUSTOM_ROLE.permissions << team_show_permission
+        AGENT_CUSTOM_ROLE.save
+      end
 
       it 'returns all the teams' do
         get "/api/v1/accounts/#{account.id}/teams/#{team.id}",

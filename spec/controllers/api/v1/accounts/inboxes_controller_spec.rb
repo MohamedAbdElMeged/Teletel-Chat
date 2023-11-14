@@ -6,6 +6,22 @@ RSpec.describe 'Inboxes API', type: :request do
   let(:account) { create(:account) }
   let(:agent) { create(:user, account: account, role: :agent) }
   let(:admin) { create(:user, account: account, role: :administrator) }
+  let(:inbox_create_permission) { create(:permission, action: 'create', controller: 'inboxes') }
+  let(:inbox_update_permission) { create(:permission, action: 'update', controller: 'inboxes') }
+  let(:inbox_destroy_permission) { create(:permission, action: 'destroy', controller: 'inboxes') }
+  let(:inbox_show_permission) { create(:permission, action: 'show', controller: 'inboxes') }
+  let(:inbox_agent_bot_permission) { create(:permission, action: 'agent_bot', controller: 'inboxes') }
+
+  before do
+    ADMINISTRATOR_CUSTOM_ROLE.permissions << inbox_create_permission
+    ADMINISTRATOR_CUSTOM_ROLE.permissions << inbox_update_permission
+    ADMINISTRATOR_CUSTOM_ROLE.permissions << inbox_destroy_permission
+    ADMINISTRATOR_CUSTOM_ROLE.permissions << inbox_show_permission
+    ADMINISTRATOR_CUSTOM_ROLE.save
+    AGENT_CUSTOM_ROLE.permissions << inbox_show_permission
+    AGENT_CUSTOM_ROLE.permissions << inbox_agent_bot_permission
+    AGENT_CUSTOM_ROLE.save
+  end
 
   describe 'GET /api/v1/accounts/{account.id}/inboxes' do
     context 'when it is an unauthenticated user' do

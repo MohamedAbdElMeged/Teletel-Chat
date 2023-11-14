@@ -2,7 +2,7 @@ class Api::V2::Accounts::ReportsController < Api::V1::Accounts::BaseController
   include Api::V2::Accounts::ReportsHelper
   include Api::V2::Accounts::HeatmapHelper
 
-  before_action :check_authorization
+  before_action :custom_check_authorization
 
   def index
     builder = V2::ReportBuilder.new(Current.account, report_params)
@@ -54,10 +54,6 @@ class Api::V2::Accounts::ReportsController < Api::V1::Accounts::BaseController
     response.headers['Content-Type'] = 'text/csv'
     response.headers['Content-Disposition'] = "attachment; filename=#{filename}.csv"
     render layout: false, template: template, formats: [:csv]
-  end
-
-  def check_authorization
-    raise Pundit::NotAuthorizedError unless Current.account_user.administrator?
   end
 
   def common_params
@@ -113,6 +109,14 @@ class Api::V2::Accounts::ReportsController < Api::V1::Accounts::BaseController
         until: params[:since]
       }
     }
+  end
+
+  def custom_check_authorization
+    action = 'show' if %w[index conversations summary].include? action_name
+    action = 'download' if %w[agents inboxes labels teams conversation_traffic].include? action_name
+    current_user = Current.account_user
+    raise Pundit::NotAuthorizedError unless current_user.custom_role.permissions.exists?(controller: controller_name,
+                                                                                         action: action) || Current.account_user.administrator?
   end
 
   def summary_metrics

@@ -4,10 +4,10 @@ class Permissions::CreatePermissionsBuilder
     @new_permissions = []
     permissions.each do |permission|
       action = permission.split('_').first
-      model = permission.split('_').last.classify
+      controller = permission.split('_').last
       new_permission = Permission.find_or_create_by(
         action: action,
-        model: model
+        controller: controller
       )
       @new_permissions.push(new_permission)
     end
