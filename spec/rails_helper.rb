@@ -39,9 +39,6 @@ rescue ActiveRecord::PendingMigrationError => e
   exit 1
 end
 RSpec.configure do |config|
-  config.before(:suite) do
-    DatabaseCleaner.clean_with(:truncation)
-  end
   admin_role = CustomRole.find_by(name: 'administrator')
 
   ADMINISTRATOR_CUSTOM_ROLE = admin_role || CustomRole.create({
