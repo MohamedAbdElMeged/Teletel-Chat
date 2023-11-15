@@ -1,10 +1,10 @@
 class Api::V1::Accounts::AgentsController < Api::V1::Accounts::BaseController
+  before_action :custom_check_authorization
   before_action :fetch_agent, except: [:create, :index]
   before_action :find_user, only: [:create]
   before_action :validate_limit, only: [:create]
   before_action :create_user, only: [:create]
   before_action :save_account_user, only: [:create]
-  before_action :custom_check_authorization
 
   def index
     @agents = agents
